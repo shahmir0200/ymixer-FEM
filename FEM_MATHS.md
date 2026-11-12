@@ -2,18 +2,14 @@
 
 How the maths behind `ymixer.py` works, from the governing equations to the matrix the computer solves. Notation: **u** = velocity vector (u, v) in x and y, p = pressure, x_B = benzene mole fraction (written in mol % in the code, where it's called `B`).
 
----
-
-## Background: linear vs non-linear
+### Background: linear vs non-linear
 
 - **Linear** differential equation → the unknown (y) only appears as y, y′, y″… (not multiplied by itself)
 - **Non-linear** → anything else, e.g. √y, y³, or y × y′
 
 This matters because linear equations turn into a linear system that the computer can solve in one go. Non-linear ones need repeated solving (e.g. Newton's method).
 
----
-
-## ① Navier–Stokes → Stokes (flow)
+### 1. Navier–Stokes → Stokes (flow)
 
 The **Navier–Stokes equations** describe how a fluid flows. There are two:
 
@@ -50,9 +46,7 @@ $$\nabla\cdot\mathbf{u} = 0, \qquad -\nabla p + \mu\nabla^2\mathbf{u} = 0$$
 
 In words: the pressure push is balanced by viscous friction, and the liquid is incompressible.
 
----
-
-## ② Mixing: flux of benzene + mass balance
+### 2. Mixing: flux of benzene + mass balance
 
 **Flux of benzene** (N_B) = rate at which benzene passes through an area, per unit time:
 
@@ -75,7 +69,7 @@ Fick's law works here because the benzene is **dilute** (1 mol %). For concentra
 
 $$\nabla\cdot\mathbf{N}_B = 0 \quad\Rightarrow\quad \nabla\cdot(x_B\,\mathbf{u}) - \nabla\cdot(D_B\nabla x_B) = 0$$
 
-Simplify: ∇·(x_B **u**) = **u**·∇x_B + x_B(∇·**u**), and ∇·**u** = 0 from ① (incompressible). D_B is constant, so ∇·(D_B∇x_B) = D_B∇²x_B.
+Simplify: ∇·(x_B **u**) = **u**·∇x_B + x_B(∇·**u**), and ∇·**u** = 0 from step 1 (incompressible). D_B is constant, so ∇·(D_B∇x_B) = D_B∇²x_B.
 
 **∴ Convection–diffusion equation (aka mixing equation):**
 
@@ -92,9 +86,7 @@ benzene carried by the flow = benzene spreading by diffusion.
 
 However, we're left with **PDEs** (because of the ∇'s), which can't be solved exactly for a Y-shaped channel. Next: turn them into linear equations the computer can solve, using FEM.
 
----
-
-## ③ Boundary conditions
+### 3. Boundary conditions
 
 PDEs → solved by **setting boundary conditions**, then solving as **linear equations**. Without boundary conditions there's no unique answer.
 
@@ -115,9 +107,7 @@ PDEs → solved by **setting boundary conditions**, then solving as **linear equ
 | Walls | **u** = 0, no-slip (Dirichlet) | ∂x_B/∂n = 0 (Neumann) |
 | Outlet | leaves freely | ∂x_B/∂n = 0 (Neumann) |
 
----
-
-## ④ Weak form
+### 4. Weak form
 
 **Problem:** how do we find values at every point on a complex shape?
 
@@ -149,9 +139,7 @@ Weak form of the Stokes equations ✓ (test functions **v** for velocity and q f
 
 $$\int \mu\,\nabla\mathbf{u}:\nabla\mathbf{v}\; dA - \int p\,(\nabla\cdot\mathbf{v})\; dA + \int q\,(\nabla\cdot\mathbf{u})\; dA = 0$$
 
----
-
-## ⑤ System of equations: [K]{x_B} = {F}
+### 5. System of equations: [K]{x_B} = {F}
 
 Each node's weak-form equation becomes **one row** of a matrix. Small 1D example (5 nodes, x_B = 1 at the left end and 0 at the right end, diffusion only). The weak form gives one equation for each middle node:
 
